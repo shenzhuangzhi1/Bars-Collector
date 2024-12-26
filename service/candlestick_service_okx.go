@@ -36,15 +36,15 @@ func NewCandlestickService(baseURL string, timeout time.Duration) *CandlestickSe
 	}
 }
 
-// FetchCandlesticks retrieves candlestick data from the API using the `before` parameter.
-func (s *CandlestickService) FetchCandlesticks(instID, bar string, limit int, before string) ([]Candlestick, string, error) {
+// FetchCandlesticks retrieves candlestick data from the API using the `after` parameter.
+func (s *CandlestickService) FetchCandlesticks(instID, bar string, limit int, after string) ([]Candlestick, string, error) {
 	// Prepare query parameters
 	params := url.Values{}
 	params.Add("instId", instID)
 	params.Add("bar", bar)
 	params.Add("limit", fmt.Sprintf("%d", limit))
-	if before != "" {
-		params.Add("before", before)
+	if after != "" {
+		params.Add("after", after)
 	}
 
 	// Construct request URL

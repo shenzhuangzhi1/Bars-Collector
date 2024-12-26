@@ -40,7 +40,7 @@ func main() {
 	if len(os.Args) == 3 {
 		bar = os.Args[2]
 	}
-	limit := 100
+	limit := 300
 
 	// Call InitializeDatabase with the  ID
 	err = dbService.InitializeDatabase(instID)
@@ -61,14 +61,14 @@ func main() {
 }
 
 // Recursive function to fetch and store candlesticks
-func fetchAndStoreCandlesticksRecursive(instID, bar string, limit int, candlestickService *service.CandlestickService, dbService *service.DatabaseService, before string, limiter *rate.Limiter) error {
+func fetchAndStoreCandlesticksRecursive(instID, bar string, limit int, candlestickService *service.CandlestickService, dbService *service.DatabaseService, after string, limiter *rate.Limiter) error {
 	// Enforce rate limit
 	if err := limiter.Wait(context.Background()); err != nil {
 		return err
 	}
 
 	// Fetch candlestick data
-	candlesticks, nextBefore, err := candlestickService.FetchCandlesticks(instID, bar, limit, before)
+	candlesticks, nextAfter, err := candlestickService.FetchCandlesticks(instID, bar, limit, after)
 	if err != nil {
 		return err
 	}
@@ -86,6 +86,6 @@ func fetchAndStoreCandlesticksRecursive(instID, bar string, limit int, candlesti
 	}
 
 	// Log progress and make the next recursive call
-	log.Printf("Fetched and stored %d candlesticks. Fetching next batch with before=%s", len(candlesticks), nextBefore)
-	return fetchAndStoreCandlesticksRecursive(instID, bar, limit, candlestickService, dbService, nextBefore, limiter)
+	log.Printf("Fetched and stored %d candlesticks. Fetching next batch with after=%s", len(candlesticks), nextAfter)
+	return fetchAndStoreCandlesticksRecursive(instID, bar, limit, candlestickService, dbService, nextAfter, limiter)
 }
